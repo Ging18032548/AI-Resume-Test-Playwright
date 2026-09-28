@@ -1,0 +1,41 @@
+{
+  "name": "ai-cv-analyzer-e2e",
+  "version": "1.0.0",
+  "description": "End-to-End and API test suite for the AI CV Analyzer web application, built with Playwright + TypeScript.",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:all-devices": "playwright test",
+    "test:chrome": "playwright test --project=\"Desktop Chrome\"",
+    "test:firefox": "playwright test --project=\"Desktop Firefox\"",
+    "test:mobile-chrome": "playwright test --project=\"Mobile Chrome\"",
+    "test:mobile-safari": "playwright test --project=\"Mobile Safari\"",
+    "test:e2e": "playwright test tests/e2e",
+    "test:api": "playwright test tests/api",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "codegen": "playwright codegen",
+    "install:browsers": "playwright install --with-deps",
+    "test:auth": "playwright test -g \"Authentication\"",
+    "test:upload": "playwright test -g \"Upload\"",
+    "test:analysis": "playwright test -g \"Analysis\"",
+    "test:profile": "playwright test -g \"Profile\""
+  },
+  "keywords": [
+    "playwright",
+    "e2e",
+    "api-testing",
+    "typescript",
+    "ai-cv-analyzer"
+  ],
+  "author": "QA Automation Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.7.5",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.6.3"
+  }
+}
