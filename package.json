@@ -1,13 +1,13 @@
 {
-  "name": "ai-cv-analyzer-e2e",
+  "name": "ai-cv-playwright",
   "version": "1.0.0",
-  "description": "End-to-End and API test suite for the AI CV Analyzer web application, built with Playwright + TypeScript.",
+  "description": "Playwright E2E Test Automation for AI CV Analyzer",
   "private": true,
   "scripts": {
     "test": "playwright test",
     "test:all-devices": "playwright test",
-    "test:chrome": "playwright test --project=\"Desktop Chrome\"",
-    "test:firefox": "playwright test --project=\"Desktop Firefox\"",
+    "test:chrome": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
     "test:mobile-chrome": "playwright test --project=\"Mobile Chrome\"",
     "test:mobile-safari": "playwright test --project=\"Mobile Safari\"",
     "test:e2e": "playwright test tests/e2e",
@@ -17,24 +17,18 @@
     "test:ui": "playwright test --ui",
     "report": "playwright show-report",
     "codegen": "playwright codegen",
-    "install:browsers": "playwright install --with-deps",
-    "test:auth": "playwright test -g \"Authentication\"",
-    "test:upload": "playwright test -g \"Upload\"",
-    "test:analysis": "playwright test -g \"Analysis\"",
-    "test:profile": "playwright test -g \"Profile\""
+    "install:browsers": "playwright install",
+    "test:auth": "playwright test tests/extended/authentication-edge.spec.ts",
+    "test:upload": "playwright test tests/extended/resume-upload-edge.spec.ts",
+    "test:analysis": "playwright test tests/extended/ai-analysis-edge.spec.ts",
+    "test:profile": "playwright test tests/extended/profile-settings-edge.spec.ts",
+    "test:navigation": "playwright test tests/extended/navigation-session.spec.ts",
+    "test:mobile": "playwright test tests/extended/mobile-ui.spec.ts",
+    "test:extended": "playwright test tests/extended"
   },
-  "keywords": [
-    "playwright",
-    "e2e",
-    "api-testing",
-    "typescript",
-    "ai-cv-analyzer"
-  ],
-  "author": "QA Automation Team",
-  "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.63.0",
-    "@types/node": "^22.7.5",
+    "@types/node": "^22.0.0",
     "dotenv": "^16.4.5",
     "typescript": "^5.6.3"
   }

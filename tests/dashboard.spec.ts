@@ -1,10 +1,34 @@
 import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage';
 import { DashboardPage } from '../pages/DashboardPage';
+import {
+  testEmail,
+  testPassword,
+} from '../utils/testData';
 
 test.describe('Dashboard Page Tests', () => {
-  test('should load dashboard successfully', async ({ page }) => {
-    // เปลี่ยน URL ไปยังหน้าเว็บของคุณ หรือใช้ mock page
-    await page.goto('https://example.com');
-    await expect(page).toHaveTitle(/Example/);
+
+  test('DASHBOARD-001 - should login and load dashboard successfully', async ({
+    page,
+  }) => {
+    const login = new LoginPage(page);
+    const dashboard = new DashboardPage(page);
+
+    // Login
+    await login.login(
+      testEmail,
+      testPassword
+    );
+
+    // Verify login success
+    await login.expectLoggedIn();
+
+    // Verify dashboard
+    await dashboard.goto();
+
+    await expect(page).toHaveURL(
+      /dashboard/i
+    );
   });
+
 });
