@@ -73,23 +73,14 @@ test.describe('Mobile UI Tests', () => {
     page,
   }) => {
 
-    await page.goto('/login', {
-      waitUntil: 'domcontentloaded',
-    });
+    const login = new LoginPage(page);
+    await login.gotoLogin();
 
-    await expect(
-      page.getByLabel(/email/i).first()
-    ).toBeVisible();
+    await expect(login.emailInput).toBeVisible();
 
-    await expect(
-      page.getByLabel(/password/i).first()
-    ).toBeVisible();
+    await expect(login.passwordInput).toBeVisible();
 
-    await expect(
-      page.getByRole('button', {
-        name: /login|sign in/i,
-      }).first()
-    ).toBeVisible();
+    await expect(login.loginButton).toBeVisible();
   });
 
 });

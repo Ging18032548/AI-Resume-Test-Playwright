@@ -11,6 +11,7 @@ export class LoginPage extends BasePage {
   readonly forgotPasswordLink: Locator;
 
   readonly nameInput: Locator;
+  readonly familyNameInput: Locator;
   readonly confirmPasswordInput: Locator;
   readonly registerButton: Locator;
 
@@ -23,35 +24,21 @@ export class LoginPage extends BasePage {
   constructor(page: Page) {
     super(page);
 
-    // =========================
     // Login
-    // =========================
-
-    this.emailInput = page
-      .locator('input[type="email"]')
-      .first();
-
-    this.passwordInput = page
-      .locator('input[type="password"]')
-      .first();
-
-    this.loginButton = page
-      .locator('button[type="submit"]')
-      .first();
+    this.emailInput = page.locator('input[type="email"]').first();
+    this.passwordInput = page.locator('input[type="password"]').first();
+    this.loginButton = page.locator('button[type="submit"]').first();
 
     this.errorMessage = page
       .locator(
         '[role="alert"], ' +
-        '[data-testid="login-error"], ' +
-        '.error-message, ' +
-        '.form-error'
+          '[data-testid="login-error"], ' +
+          '.error-message, ' +
+          '.form-error',
       )
       .first();
 
-    // =========================
     // Register / Sign Up
-    // =========================
-
     this.registerLink = page
       .getByRole('link', {
         name: /register|sign up|create account/i,
@@ -64,31 +51,19 @@ export class LoginPage extends BasePage {
       })
       .first();
 
-    this.nameInput = page
-      .getByLabel(
-        /name|full name|display name/i
-      )
-      .first();
-
+    // Form order: first name, last name, email, password, confirmation.
+    this.nameInput = page.locator('input[type="text"]').first();
+    this.familyNameInput = page.locator('input[type="text"]').nth(1);
     this.confirmPasswordInput = page
-      .getByLabel(
-        /confirm password|password confirmation/i
-      )
-      .first();
+      .locator('input[type="password"]')
+      .nth(1);
 
     this.registerButton = page
-      .getByRole('button', {
-        name: /register|sign up|create account/i,
-      })
+      .locator('form button[type="submit"]')
       .first();
 
-    // =========================
     // Password Reset
-    // =========================
-
-    this.resetEmailInput = page
-      .locator('input[type="email"]')
-      .first();
+    this.resetEmailInput = page.locator('input[type="email"]').first();
 
     this.resetSubmitButton = page
       .getByRole('button', {
@@ -99,15 +74,12 @@ export class LoginPage extends BasePage {
     this.resetConfirmation = page
       .locator(
         '[data-testid="reset-confirmation"], ' +
-        '[role="status"], ' +
-        '.success-message'
+          '[role="status"], ' +
+          '.success-message',
       )
       .first();
 
-    // =========================
     // Logout
-    // =========================
-
     this.logoutButton = page
       .getByRole('button', {
         name: /logout|sign out/i,
@@ -115,53 +87,33 @@ export class LoginPage extends BasePage {
       .first();
   }
 
-  // =========================
-  // Login
-  // =========================
-
   async gotoLogin() {
-    await this.page.goto('/login', {
+    await this.page.goto('/sign-in', {
       waitUntil: 'domcontentloaded',
     });
   }
 
-  async login(
-    email: string,
-    password: string
-  ) {
+  async login(email: string, password: string) {
     await this.gotoLogin();
 
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
 
-    await expect(
-      this.loginButton
-    ).toBeEnabled();
-
+    await expect(this.loginButton).toBeEnabled();
     await this.loginButton.click();
   }
 
   async expectLoggedIn() {
-    await expect(this.page).toHaveURL(
-      /dashboard|analyze|home/i
-    );
+    await expect(this.page).toHaveURL(/dashboard|analyze|home/i);
   }
 
   async expectLoginError(pattern?: RegExp) {
-    await expect(
-      this.errorMessage
-    ).toBeVisible();
+    await expect(this.errorMessage).toBeVisible();
 
     if (pattern) {
-      await expect(
-        this.errorMessage
-      ).toHaveText(pattern);
+      await expect(this.errorMessage).toHaveText(pattern);
     }
   }
-
-  // =========================
-  // Register
-  // =========================
 
   async gotoRegister() {
     await this.page.goto('/register', {
@@ -173,62 +125,44 @@ export class LoginPage extends BasePage {
     name: string,
     email: string,
     password: string,
-    confirmPassword = password
+    confirmPassword = password,
   ) {
     await this.gotoRegister();
 
-    await this.nameInput.fill(name);
+    const [firstName, ...lastNameParts] = name.trim().split(/\s+/);
+
+    await this.nameInput.fill(firstName);
+
+    await this.familyNameInput.fill(lastNameParts.join(' '));
+
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
-    await this.confirmPasswordInput.fill(
-      confirmPassword
-    );
-
+    await this.confirmPasswordInput.fill(confirmPassword);
     await this.registerButton.click();
   }
 
-  // =========================
-  // Password Reset
-  // =========================
-
-  async requestPasswordReset(
-    email: string
-  ) {
-    await this.page.goto(
-      '/forgot-password',
-      {
-        waitUntil: 'domcontentloaded',
-      }
-    );
+  async requestPasswordReset(email: string) {
+    await this.page.goto('/forgot-password', {
+      waitUntil: 'domcontentloaded',
+    });
 
     await this.resetEmailInput.fill(email);
     await this.resetSubmitButton.click();
   }
 
   async expectPasswordResetRequested() {
-    await expect(
-      this.resetConfirmation
-    ).toBeVisible();
+    await expect(this.resetConfirmation).toBeVisible();
   }
-
-  // =========================
-  // Logout
-  // =========================
 
   async logout() {
     await this.openMobileMenuIfPresent();
     await this.openUserMenuIfPresent();
 
-    await expect(
-      this.logoutButton
-    ).toBeVisible();
-
+    await expect(this.logoutButton).toBeVisible();
     await this.logoutButton.click();
   }
 
   async expectLoggedOut() {
-    await expect(this.page).toHaveURL(
-      /login|signin|auth/i
-    );
+    await expect(this.page).toHaveURL(/login|signin|auth/i);
   }
 }

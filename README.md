@@ -1,39 +1,40 @@
-# AI CV Analyzer — Playwright E2E Test Suite (TypeScript)
+# AI Resume Playwright E2E
 
-ครอบคลุม: Authentication (Register/Login/Password Reset/Logout), Resume Upload (PDF/DOCX + validation),
-AI Analysis (Score/Feedback/Keyword Matching), Profile & Settings — รันบน 4 devices
+This repository contains the Playwright automation suite for the AI Resume website. The website and API must be running separately; this repository contains test code, not the application server.
 
-## โครงสร้าง
-```
-playwright.config.ts      # 4 projects, screenshot/video/trace, HTML reporter
-.env.example              # BASE_URL, API_BASE_URL, TEST_EMAIL, TEST_PASSWORD
-pages/  BasePage.ts  LoginPage.ts  DashboardPage.ts  ProfilePage.ts
-tests/e2e/e2e-flow.spec.ts        # AUTH / UPLOAD / ANALYSIS / PROFILE
-tests/api/backend-health.spec.ts  # Health check + /analyze schema
-utils/  testData.ts  testFiles.ts # env, unique email, PDF/DOCX/invalid/oversized fixtures
+## Setup
+
+```powershell
+npm ci
+npx playwright install
+Copy-Item .env.example .env
 ```
 
-## ติดตั้งและรัน
-```bash
-npm install
-npx playwright install --with-deps
-cp .env.example .env            # ใส่ BASE_URL, TEST_EMAIL, TEST_PASSWORD
+Set `BASE_URL` in `.env` to the running website URL. Set `TEST_EMAIL` and `TEST_PASSWORD` to an existing QA account for tests that need authentication. `API_BASE_URL` is reserved for API checks.
 
-npm run test:all-devices        # ทุก device
-npm run test:chrome             # Desktop Chrome 1920x1080
-npm run test:firefox            # Desktop Firefox 1920x1080
-npm run test:mobile-safari      # iPhone 14 Pro
-npm run test:mobile-chrome      # Pixel 5
-npm run test:auth               # เฉพาะกลุ่ม Authentication (upload/analysis/profile ก็มี)
-npm run report                  # เปิด HTML Report ล่าสุด
+## Run tests
+
+```powershell
+npm test                                      # all configured browsers/devices
+npm run test:chrome                           # Desktop Chrome
+npm run test:firefox                          # Desktop Firefox
+npm run test:mobile-chrome                    # Pixel 5
+npm run test:mobile-safari                    # iPhone 14 Pro
+npm run test:auth                             # registration flow and auth edge cases
+npm run test:upload                            # resume upload validation
+npm run test:analysis                          # resume analysis
+npm run test:profile                           # profile and settings
+npm run test:navigation                        # navigation and session
+npm run test:extended                          # all extended scenarios
+npm run report                                # open latest HTML report
 ```
-HTML Report ฝัง screenshot, video และ trace ไว้ในหน้าเดียว (เปิดอัตโนมัติเมื่อมีเทสต์ล้ม เมื่อรันในเครื่อง)
-ภาพที่แนบด้วย `attachScreenshot()` จะเห็นในรายงานแม้เทสต์ผ่าน
 
-## ต้องปรับก่อนรันกับระบบจริง
-Locator เขียนจากรูปแบบมาตรฐาน (role/label + `data-testid` สำรอง) เพราะยังตรวจ DOM จริงของแอปไม่ได้
-1. ปรับ path (`/login`, `/register`, `/dashboard`, `/profile`) และ `data-testid` ใน `pages/*.ts`
-2. ปรับข้อความ error ที่คาดหวัง (regex) ให้ตรงกับข้อความจริงของแอป
-3. ปรับ `MAX_UPLOAD_MB` ใน `utils/testData.ts` ให้ตรงกับเพดานจริง
-4. ถ้าแอปบังคับยืนยันอีเมลหลังสมัคร AUTH-01 ต้องปรับให้สอดคล้อง
-5. ถ้า Login ใช้ Google OAuth อย่างเดียว ให้ใช้ `storageState` แทนการกรอกฟอร์ม
+The suite covers app availability, registration/login, protected navigation, profile settings, resume upload validation, analysis results, and mobile UI. Tests requiring a pre-existing account need valid `TEST_EMAIL` and `TEST_PASSWORD` values. The registration flow uses the credentials in `tests/registration-login-flow.spec.ts` and requires a working registration API.
+
+## Project layout
+
+- `playwright.config.ts`: browser/device projects and reporting
+- `pages/`: page objects for authentication, dashboard, and profile
+- `tests/`: smoke, registration, dashboard, and extended browser scenarios
+- `utils/testData.ts`: environment values and test data helpers
+- `utils/testFiles.ts`: generated PDF, DOCX, and invalid upload fixtures

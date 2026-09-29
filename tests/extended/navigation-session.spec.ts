@@ -77,7 +77,7 @@ test.describe(
 
         await expect(
           page
-        ).toHaveURL(/login/i);
+        ).toHaveURL(/sign-in|login/i);
       }
     );
 
