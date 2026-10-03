@@ -2,11 +2,15 @@ import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import {
+  hasTestAccount,
   testEmail,
   testPassword,
 } from '../utils/testData';
 
 test.describe('Dashboard Page Tests', () => {
+  test.beforeEach(async () => {
+    test.skip(!hasTestAccount(), 'Set TEST_EMAIL and TEST_PASSWORD in .env to run dashboard checks.');
+  });
 
   test('DASHBOARD-001 - should login and load dashboard successfully', async ({
     page,

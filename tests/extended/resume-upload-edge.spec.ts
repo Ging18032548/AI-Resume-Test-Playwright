@@ -13,6 +13,7 @@ import {
 
 import {
   env,
+  hasTestAccount,
   MAX_UPLOAD_MB,
 } from '../../utils/testData';
 
@@ -25,6 +26,8 @@ test.describe(
 
     test.beforeEach(
       async ({ page }) => {
+
+        test.skip(!hasTestAccount(), 'Set TEST_EMAIL and TEST_PASSWORD in .env to run upload checks.');
 
         const login =
           new LoginPage(page);

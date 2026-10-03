@@ -9,6 +9,7 @@ import {
 } from '../../utils/testFiles';
 
 import {
+  hasTestAccount,
   env,
 } from '../../utils/testData';
 
@@ -21,6 +22,8 @@ test.describe(
 
     test.beforeEach(
       async ({ page }) => {
+
+        test.skip(!hasTestAccount(), 'Set TEST_EMAIL and TEST_PASSWORD in .env to run analysis checks.');
 
         const login =
           new LoginPage(page);
@@ -199,14 +202,14 @@ test.describe(
         await dashboard.expectResultsVisible();
 
         const scoreBefore =
-          await dashboard.getOverallScore();
+          await dashboard.getOverallScoreValue();
 
         await page.reload();
 
         await dashboard.expectResultsVisible();
 
         const scoreAfter =
-          await dashboard.getOverallScore();
+          await dashboard.getOverallScoreValue();
 
         expect(scoreAfter)
           .toBe(scoreBefore);
@@ -234,7 +237,7 @@ test.describe(
         await dashboard.expectResultsVisible();
 
         const firstScore =
-          await dashboard.getOverallScore();
+          await dashboard.getOverallScoreValue();
 
         await dashboard.uploadResume(
           createValidCvDocx(
@@ -247,7 +250,7 @@ test.describe(
         await dashboard.expectResultsVisible();
 
         const secondScore =
-          await dashboard.getOverallScore();
+          await dashboard.getOverallScoreValue();
 
         expect(
           Number.isFinite(firstScore)

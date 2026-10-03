@@ -5,6 +5,7 @@ import {
 
 import {
   env,
+  hasTestAccount,
   STRONG_PASSWORD,
 } from '../../utils/testData';
 
@@ -17,6 +18,8 @@ test.describe(
 
     test.beforeEach(
       async ({ page }) => {
+
+        test.skip(!hasTestAccount(), 'Set TEST_EMAIL and TEST_PASSWORD in .env to run profile checks.');
 
         const login =
           new LoginPage(page);

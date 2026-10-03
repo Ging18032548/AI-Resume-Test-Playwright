@@ -59,8 +59,7 @@ export class ExtendedDashboardPage extends DashboardPage {
   }
 
   async expectScoreInValidRange(): Promise<void> {
-    const score =
-      await this.getOverallScore();
+    const score = await this.getOverallScoreValue();
 
     expect(score)
       .toBeGreaterThanOrEqual(0);

@@ -22,6 +22,7 @@
     "test:analysis": "playwright test tests/extended/ai-analysis-edge.spec.ts",
     "test:profile": "playwright test tests/extended/profile-settings-edge.spec.ts",
     "test:navigation": "playwright test tests/extended/navigation-session.spec.ts",
+    "test:critical": "playwright test tests/critical-user-journey.spec.ts --project=\"Desktop Chrome\"",
     "test:mobile": "playwright test tests/extended/mobile-ui.spec.ts",
     "test:extended": "playwright test tests/extended"
   },

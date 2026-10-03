@@ -25,11 +25,12 @@ npm run test:upload                            # resume upload validation
 npm run test:analysis                          # resume analysis
 npm run test:profile                           # profile and settings
 npm run test:navigation                        # navigation and session
+npm run test:critical                          # complete real-user journey on Desktop Chrome
 npm run test:extended                          # all extended scenarios
 npm run report                                # open latest HTML report
 ```
 
-The suite covers app availability, registration/login, protected navigation, profile settings, resume upload validation, analysis results, and mobile UI. Tests requiring a pre-existing account need valid `TEST_EMAIL` and `TEST_PASSWORD` values. The registration flow uses the credentials in `tests/registration-login-flow.spec.ts` and requires a working registration API.
+The suite covers app availability, authentication validation, registration/login, protected navigation, profile settings, resume upload validation, analysis results, result persistence after reload, logout protection, and mobile UI. Tests requiring a pre-existing account need valid `TEST_EMAIL` and `TEST_PASSWORD` values. The registration flow is opt-in and requires `REGISTRATION_NAME`, `REGISTRATION_EMAIL`, and `REGISTRATION_PASSWORD` for a dedicated QA account. Authenticated tests are skipped with a clear reason when credentials are not configured.
 
 ## Project layout
 

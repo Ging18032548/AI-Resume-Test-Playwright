@@ -1,16 +1,16 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { DashboardPage } from '../pages/DashboardPage';
-
-const credentials = {
-  name: 'Julaluk Matang',
-  email: 'chulalak.ma@ku.th',
-  password: 'Ging18032548',
-};
+import { env, hasRegistrationAccount } from '../utils/testData';
 
 const duplicateMessage = '\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E19\u0E35\u0E49\u0E21\u0E35\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19\u0E23\u0E30\u0E1A\u0E1A\u0E41\u0E25\u0E49\u0E27';
 
 test('register, login, open resume page, and reject duplicate registration', async ({ page }) => {
+  test.skip(
+    !hasRegistrationAccount(),
+    'Set REGISTRATION_NAME, REGISTRATION_EMAIL, and REGISTRATION_PASSWORD in .env to run registration flow.'
+  );
+
   const auth = new LoginPage(page);
   const dashboard = new DashboardPage(page);
   const registrationSuccess = page.getByText(
@@ -19,21 +19,7 @@ test('register, login, open resume page, and reject duplicate registration', asy
   const duplicateAlert = page.getByText(duplicateMessage, { exact: true }).first();
   const registrationError = page.getByRole('alert').first();
 
-  // เพิ่มตรงนี้ ก่อน auth.register(...)
-  page.on('response', async (response) => {
-    if (response.request().method() !== 'POST' || response.status() < 400) return;
-
-    console.log('POST:', response.url());
-    console.log('Status:', response.status());
-
-    try {
-      console.log('Body:', await response.text());
-    } catch {
-      // Response อาจไม่มี body ให้อ่าน
-    }
-  });
-
-  await auth.register(credentials.name, credentials.email, credentials.password);
+  await auth.register(env.registrationName, env.registrationEmail, env.registrationPassword);
 
   await expect.poll(async () => {
     const path = new URL(page.url()).pathname;
@@ -58,7 +44,7 @@ test('register, login, open resume page, and reject duplicate registration', asy
   }
 
   // Always perform a fresh login so both new and previously registered accounts are exercised.
-  await auth.login(credentials.email, credentials.password);
+  await auth.login(env.registrationEmail, env.registrationPassword);
   await auth.expectLoggedIn();
 
   await dashboard.goto();
@@ -66,6 +52,6 @@ test('register, login, open resume page, and reject duplicate registration', asy
   await expect(dashboard.fileInput).toBeVisible();
 
   // Re-submit the same account and verify the exact Thai duplicate-account message.
-  await auth.register(credentials.name, credentials.email, credentials.password);
+  await auth.register(env.registrationName, env.registrationEmail, env.registrationPassword);
   await expect(page.getByText(duplicateMessage, { exact: true })).toBeVisible();
 });

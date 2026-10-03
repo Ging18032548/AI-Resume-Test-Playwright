@@ -1,6 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/LoginPage';
-import { env, STRONG_PASSWORD, uniqueEmail } from '../../utils/testData';
+import {
+  env,
+  hasTestAccount,
+  STRONG_PASSWORD,
+  uniqueEmail,
+} from '../../utils/testData';
 
 test.describe('Authentication edge cases', () => {
   test('login form remains on sign-in when submitted empty', async ({ page }) => {
@@ -26,7 +31,7 @@ test.describe('Authentication edge cases', () => {
   });
 
   test('rejects a wrong password for the configured test account', async ({ page }) => {
-    test.skip(!env.testEmail, 'Set TEST_EMAIL in .env to run this case.');
+    test.skip(!hasTestAccount(), 'Set TEST_EMAIL and TEST_PASSWORD in .env to run this case.');
     const auth = new LoginPage(page);
     await auth.login(env.testEmail, 'WrongPassword999!');
     await auth.expectLoginError();

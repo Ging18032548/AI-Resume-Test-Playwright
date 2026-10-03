@@ -4,6 +4,7 @@ import {
 } from '@playwright/test';
 
 import {
+  hasTestAccount,
   env,
 } from '../../utils/testData';
 
@@ -13,6 +14,10 @@ import { DashboardPage } from '../../pages/DashboardPage';
 test.describe(
   'Navigation & Session',
   () => {
+
+    test.beforeEach(async () => {
+      test.skip(!hasTestAccount(), 'Set TEST_EMAIL and TEST_PASSWORD in .env to run session checks.');
+    });
 
     test(
       'NAV-001: Dashboard can be opened after login',

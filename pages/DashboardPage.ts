@@ -159,6 +159,45 @@ export class DashboardPage extends BasePage {
     return await this.overallScore.innerText();
   }
 
+  async getOverallScoreValue(): Promise<number> {
+    const scoreText = await this.getOverallScore();
+    const score = Number.parseFloat(scoreText.replace(',', '.'));
+
+    expect(Number.isFinite(score), `Expected a numeric score, received "${scoreText}"`).toBe(true);
+
+    return score;
+  }
+
+  async selectFirstJobPositionIfAvailable(): Promise<boolean> {
+    if (await this.jobPositionSelect.count() === 0) {
+      return false;
+    }
+
+    const tagName = await this.jobPositionSelect.evaluate(
+      (element) => element.tagName.toLowerCase()
+    );
+
+    if (tagName === 'select') {
+      const option = this.jobPositionSelect.locator('option').filter({
+        hasText: /\S/,
+      }).first();
+
+      if (await option.count() === 0) {
+        return false;
+      }
+
+      const value = await option.getAttribute('value');
+      if (!value) {
+        return false;
+      }
+
+      await this.jobPositionSelect.selectOption(value);
+      return true;
+    }
+
+    return false;
+  }
+
   async getKeywordTexts(
     kind: 'matched' | 'missing'
   ) {
