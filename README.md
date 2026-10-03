@@ -26,16 +26,19 @@ npm run test:analysis                          # resume analysis
 npm run test:profile                           # profile and settings
 npm run test:navigation                        # navigation and session
 npm run test:critical                          # complete real-user journey on Desktop Chrome
+npm run test:full-system                       # register, upload, analyze, navigate, and logout
+npm run test:features                          # authentication, routes, navigation, and logout on all devices
 npm run test:extended                          # all extended scenarios
+npx playwright test tests/full-system.spec.ts --project="Desktop Chrome" # click register from sign-in and check all protected pages
 npm run report                                # open latest HTML report
 ```
 
-The suite covers app availability, authentication validation, registration/login, protected navigation, profile settings, resume upload validation, analysis results, result persistence after reload, logout protection, and mobile UI. Tests requiring a pre-existing account need valid `TEST_EMAIL` and `TEST_PASSWORD` values. The registration flow is opt-in and requires `REGISTRATION_NAME`, `REGISTRATION_EMAIL`, and `REGISTRATION_PASSWORD` for a dedicated QA account. Authenticated tests are skipped with a clear reason when credentials are not configured.
+The suite covers app availability, authentication validation, registration/login, protected navigation, profile settings, resume upload validation, analysis results, result persistence after reload, logout protection, and mobile UI. Tests requiring a pre-existing account need valid `TEST_EMAIL` and `TEST_PASSWORD` values. The new-member upload and full-system flows require `REGISTRATION_NAME`, `REGISTRATION_EMAIL`, and `REGISTRATION_PASSWORD`; the test derives a unique email using plus-addressing from `REGISTRATION_EMAIL`, so the configured domain must accept plus-addresses. Authenticated tests are skipped with a clear reason when credentials are not configured.
 
 ## Project layout
 
 - `playwright.config.ts`: browser/device projects and reporting
-- `pages/`: page objects for authentication, dashboard, and profile
-- `tests/`: smoke, registration, dashboard, and extended browser scenarios
+- `pages/`: page objects for authentication, dashboard, upload, analysis, and settings
+- `tests/`: smoke, registration, dashboard, upload, analysis, and extended browser scenarios
 - `utils/testData.ts`: environment values and test data helpers
-- `utils/testFiles.ts`: generated PDF, DOCX, and invalid upload fixtures
+- `utils/testFiles.ts`: generated PDF and invalid upload fixtures

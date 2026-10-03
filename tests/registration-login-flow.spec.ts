@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
-import { DashboardPage } from '../pages/DashboardPage';
+import { UploadResumePage } from '../pages/UploadResumePage';
 import { env, hasRegistrationAccount } from '../utils/testData';
 
-const duplicateMessage = '\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E19\u0E35\u0E49\u0E21\u0E35\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19\u0E23\u0E30\u0E1A\u0E1A\u0E41\u0E25\u0E49\u0E27';
+const duplicateMessage = /อีเมลนี้ถูกใช้งานแล้ว/i;
 
 test('register, login, open resume page, and reject duplicate registration', async ({ page }) => {
   test.skip(
@@ -12,14 +12,18 @@ test('register, login, open resume page, and reject duplicate registration', asy
   );
 
   const auth = new LoginPage(page);
-  const dashboard = new DashboardPage(page);
+  const upload = new UploadResumePage(page);
   const registrationSuccess = page.getByText(
     /success|\u0E2A\u0E21\u0E31\u0E04\u0E23\u0E2A\u0E33\u0E40\u0E23\u0E47\u0E08|\u0E25\u0E07\u0E17\u0E30\u0E40\u0E1A\u0E35\u0E22\u0E19\u0E2A\u0E33\u0E40\u0E23\u0E47\u0E08|\u0E22\u0E34\u0E19\u0E14\u0E35\u0E15\u0E49\u0E2D\u0E19\u0E23\u0E31\u0E1A/i,
   ).first();
-  const duplicateAlert = page.getByText(duplicateMessage, { exact: true }).first();
+  const duplicateAlert = page.getByText(duplicateMessage).first();
   const registrationError = page.getByRole('alert').first();
 
-  await auth.register(env.registrationName, env.registrationEmail, env.registrationPassword);
+  await auth.registerFromSignIn(
+    env.registrationName,
+    env.registrationEmail,
+    env.registrationPassword,
+  );
 
   await expect.poll(async () => {
     const path = new URL(page.url()).pathname;
@@ -47,11 +51,15 @@ test('register, login, open resume page, and reject duplicate registration', asy
   await auth.login(env.registrationEmail, env.registrationPassword);
   await auth.expectLoggedIn();
 
-  await dashboard.goto();
-  await expect(page).toHaveURL(/dashboard/i);
-  await expect(dashboard.fileInput).toBeVisible();
+  await upload.goto();
+  await expect(page).toHaveURL(/\/resumes\/upload$/i);
+  await expect(upload.fileInput).toBeVisible();
 
   // Re-submit the same account and verify the exact Thai duplicate-account message.
-  await auth.register(env.registrationName, env.registrationEmail, env.registrationPassword);
-  await expect(page.getByText(duplicateMessage, { exact: true })).toBeVisible();
+  await auth.registerFromSignIn(
+    env.registrationName,
+    env.registrationEmail,
+    env.registrationPassword,
+  );
+  await expect(page.getByText(duplicateMessage)).toBeVisible();
 });

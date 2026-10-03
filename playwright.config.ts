@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const baseURL = process.env.BASE_URL || 'http://localhost:3000';
+const baseURL = process.env.BASE_URL || 'http://localhost:5173';
 
 export default defineConfig({
   testDir: './tests',
@@ -28,7 +28,7 @@ export default defineConfig({
     ['list'],
     ['html', {
       outputFolder: 'playwright-report',
-      open: 'never',
+      open: 'always', // เพิ่มให้เปิดเบราว์เซอร์ดูรายงานอัตโนมัติทุกครั้งเมื่อรันเสร็จ
     }],
   ],
 
@@ -47,7 +47,8 @@ export default defineConfig({
 
     ignoreHTTPSErrors: true,
 
-    headless: true,
+    // Show the browser during local runs; CI remains headless.
+    headless: !!process.env.CI,
   },
 
   projects: [

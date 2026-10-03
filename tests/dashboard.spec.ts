@@ -31,7 +31,7 @@ test.describe('Dashboard Page Tests', () => {
     await dashboard.goto();
 
     await expect(page).toHaveURL(
-      /dashboard/i
+      /\/dashboard$/i
     );
   });
 

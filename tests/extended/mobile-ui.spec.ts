@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/LoginPage';
-import { DashboardPage } from '../../pages/DashboardPage';
 import {
   testEmail,
   testPassword,
@@ -31,12 +30,10 @@ test.describe('Mobile UI Tests', () => {
     page,
   }) => {
 
-    const dashboard = new DashboardPage(page);
-
-    await dashboard.goto();
+    await page.goto('/dashboard');
 
     await expect(page).toHaveURL(
-      /dashboard/i
+      /\/dashboard$/i
     );
   });
 

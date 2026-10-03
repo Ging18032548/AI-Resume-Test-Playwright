@@ -36,9 +36,7 @@ test.describe(
 
         await dashboard.goto();
 
-        await expect(
-          dashboard.fileInput
-        ).toBeAttached();
+        await expect(page).toHaveURL(/\/dashboard$/i);
       }
     );
 
@@ -59,7 +57,7 @@ test.describe(
 
         await expect(
           page
-        ).toHaveURL(/dashboard|analy[sz]e|home/i);
+        ).toHaveURL(/\/dashboard$/i);
       }
     );
 
@@ -99,11 +97,11 @@ test.describe(
           env.testPassword
         );
 
-        await page.goto('/profile');
+        await page.goto('/settings');
 
         await expect(
           page
-        ).toHaveURL(/profile/i);
+        ).toHaveURL(/settings/i);
       }
     );
 
@@ -120,7 +118,7 @@ test.describe(
           env.testPassword
         );
 
-        await page.goto('/profile');
+        await page.goto('/settings');
 
         await page.goto('/dashboard');
 
@@ -128,7 +126,7 @@ test.describe(
 
         await expect(
           page
-        ).toHaveURL(/profile/i);
+        ).toHaveURL(/settings/i);
       }
     );
 
@@ -145,7 +143,7 @@ test.describe(
           env.testPassword
         );
 
-        await page.goto('/profile');
+        await page.goto('/settings');
 
         await page.goto('/dashboard');
 

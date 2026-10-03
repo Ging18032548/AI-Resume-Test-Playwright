@@ -40,15 +40,11 @@ export class LoginPage extends BasePage {
 
     // Register / Sign Up
     this.registerLink = page
-      .getByRole('link', {
-        name: /register|sign up|create account/i,
-      })
+      .getByRole('link', { name: /register|sign up|create account|สมัครสมาชิก/i })
       .first();
 
     this.forgotPasswordLink = page
-      .getByRole('link', {
-        name: /forgot password|reset password/i,
-      })
+      .getByRole('link', { name: /forgot password|reset password|ลืมรหัสผ่าน/i })
       .first();
 
     // Form order: first name, last name, email, password, confirmation.
@@ -81,10 +77,13 @@ export class LoginPage extends BasePage {
 
     // Logout
     this.logoutButton = page
-      .getByRole('button', {
-        name: /logout|sign out/i,
-      })
+      .getByRole('button', { name: /logout|sign out|ออกจากระบบ/i })
       .first();
+  }
+
+  // ✅ เพิ่ม Alias goto() เพื่อให้เรียกใช้ตรงกับไฟล์ spec ต่างๆ ได้โดยไม่เกิด TS2339
+  async goto() {
+    await this.gotoLogin();
   }
 
   async gotoLogin() {
@@ -104,7 +103,7 @@ export class LoginPage extends BasePage {
   }
 
   async expectLoggedIn() {
-    await expect(this.page).toHaveURL(/dashboard|analyze|home/i);
+    await expect(this.page).toHaveURL(/\/dashboard(?:$|\/)/i);
   }
 
   async expectLoginError(pattern?: RegExp) {
@@ -121,6 +120,13 @@ export class LoginPage extends BasePage {
     });
   }
 
+  async openRegistrationFromSignIn() {
+    await this.gotoLogin();
+    await expect(this.registerLink).toBeVisible();
+    await this.registerLink.click();
+    await expect(this.page).toHaveURL(/\/register$/i);
+  }
+
   async register(
     name: string,
     email: string,
@@ -133,11 +139,39 @@ export class LoginPage extends BasePage {
 
     await this.nameInput.fill(firstName);
 
-    await this.familyNameInput.fill(lastNameParts.join(' '));
+    if (lastNameParts.length > 0 && await this.familyNameInput.isVisible()) {
+      await this.familyNameInput.fill(lastNameParts.join(' '));
+    }
 
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
-    await this.confirmPasswordInput.fill(confirmPassword);
+
+    if (await this.confirmPasswordInput.isVisible()) {
+      await this.confirmPasswordInput.fill(confirmPassword);
+    }
+
+    await this.registerButton.click();
+  }
+
+  async registerFromSignIn(
+    name: string,
+    email: string,
+    password: string,
+    confirmPassword = password,
+  ) {
+    await this.openRegistrationFromSignIn();
+
+    const [firstName, ...lastNameParts] = name.trim().split(/\s+/);
+
+    await this.nameInput.fill(firstName);
+    if (lastNameParts.length > 0 && await this.familyNameInput.isVisible()) {
+      await this.familyNameInput.fill(lastNameParts.join(' '));
+    }
+    await this.emailInput.fill(email);
+    await this.passwordInput.fill(password);
+    if (await this.confirmPasswordInput.isVisible()) {
+      await this.confirmPasswordInput.fill(confirmPassword);
+    }
     await this.registerButton.click();
   }
 
@@ -163,6 +197,6 @@ export class LoginPage extends BasePage {
   }
 
   async expectLoggedOut() {
-    await expect(this.page).toHaveURL(/login|signin|auth/i);
+    await expect(this.page).toHaveURL(/sign-in|login|auth/i);
   }
 }

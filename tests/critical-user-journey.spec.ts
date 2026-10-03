@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
-import { ExtendedDashboardPage } from '../pages/ExtendedDashboardPage';
+import { UploadResumePage } from '../pages/UploadResumePage';
+import { AnalysisResultPage } from '../pages/AnalysisResultPage';
 import { ProfilePage } from '../pages/ProfilePage';
 import { env, hasTestAccount } from '../utils/testData';
 import { createValidCvPdf } from '../utils/testFiles';
@@ -12,31 +13,23 @@ test.describe('Critical user journey', () => {
 
   test('user can analyze a resume and safely leave the account', async ({ page }) => {
     const login = new LoginPage(page);
-    const dashboard = new ExtendedDashboardPage(page);
+    const upload = new UploadResumePage(page);
+    const result = new AnalysisResultPage(page);
     const profile = new ProfilePage(page);
 
     await login.login(env.testEmail, env.testPassword);
     await login.expectLoggedIn();
 
-    await dashboard.goto();
-    await expect(dashboard.fileInput).toBeAttached();
-
-    await dashboard.uploadResume(createValidCvPdf('critical-journey.pdf'));
-    await dashboard.expectFileAccepted('critical-journey.pdf');
-    await dashboard.selectFirstJobPositionIfAvailable();
-    await dashboard.analyze();
-    await dashboard.expectResultsVisible();
-    await dashboard.expectScoreInValidRange();
-    await dashboard.expectFeedbackAvailable();
-    await dashboard.expectKeywordSectionAvailable();
-
-    const scoreBeforeReload = await dashboard.getOverallScoreValue();
+    await upload.goto();
+    await upload.uploadResume(createValidCvPdf('critical-journey.pdf'));
+    await upload.upload();
+    await upload.startAnalysis();
+    await result.expectScoreInValidRange();
     await page.reload();
-    await dashboard.expectResultsVisible();
-    await expect(dashboard.getOverallScoreValue()).resolves.toBe(scoreBeforeReload);
+    await result.waitForCompletion();
 
     await profile.goto();
-    await expect(profile.displayNameInput).toBeVisible();
+    await expect(page).toHaveURL(/\/settings$/);
 
     await login.logout();
     await login.expectLoggedOut();

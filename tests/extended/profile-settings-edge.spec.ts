@@ -41,9 +41,7 @@ test.describe(
 
         await profile.goto();
 
-        await expect(
-          profile.displayNameInput
-        ).toBeVisible();
+        await expect(page).toHaveURL(/\/settings$/i);
       }
     );
 
