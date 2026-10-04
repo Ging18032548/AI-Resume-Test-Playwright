@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures/mockApi';
 
 test.describe('Application Smoke Test', () => {
 

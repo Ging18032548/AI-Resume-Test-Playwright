@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const mockApiEnabled = process.env.MOCK_API !== 'false';
+
 export const env = {
   baseUrl:
     process.env.BASE_URL || 'http://localhost:5173',
@@ -10,19 +12,19 @@ export const env = {
     process.env.API_BASE_URL || 'http://localhost:5000',
 
   testEmail:
-    process.env.TEST_EMAIL || '',
+    mockApiEnabled ? 'qa@example.test' : process.env.TEST_EMAIL || '',
 
   testPassword:
-    process.env.TEST_PASSWORD || '',
+    mockApiEnabled ? 'MockPassword123!' : process.env.TEST_PASSWORD || '',
 
   registrationName:
-    process.env.REGISTRATION_NAME || '',
+    mockApiEnabled ? 'QA Tester' : process.env.REGISTRATION_NAME || '',
 
   registrationEmail:
-    process.env.REGISTRATION_EMAIL || '',
+    mockApiEnabled ? 'new-member@example.test' : process.env.REGISTRATION_EMAIL || '',
 
   registrationPassword:
-    process.env.REGISTRATION_PASSWORD || '',
+    mockApiEnabled ? 'MockPassword123!' : process.env.REGISTRATION_PASSWORD || '',
 };
 
 export const baseUrl = env.baseUrl;
@@ -33,11 +35,24 @@ export const testEmail = env.testEmail;
 
 export const testPassword = env.testPassword;
 
+function isConfiguredEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+function isPlaceholder(value: string): boolean {
+  return /^(อีเมล|รหัสผ่าน|password|email|ที่มีอยู่จริง|สำหรับ|qa-)/i.test(value.trim());
+}
+
 export function hasRegistrationAccount(): boolean {
+  if (process.env.MOCK_API !== 'false') {
+    return true;
+  }
   return Boolean(
     env.registrationName &&
-    env.registrationEmail &&
-    env.registrationPassword
+    isConfiguredEmail(env.registrationEmail) &&
+    env.registrationPassword &&
+    !isPlaceholder(env.registrationEmail) &&
+    !isPlaceholder(env.registrationPassword)
   );
 }
 
@@ -64,5 +79,13 @@ export const STRONG_PASSWORD =
 export const MAX_UPLOAD_MB = 5;
 
 export function hasTestAccount(): boolean {
-  return Boolean(env.testEmail && env.testPassword);
+  if (process.env.MOCK_API !== 'false') {
+    return true;
+  }
+  return Boolean(
+    isConfiguredEmail(env.testEmail) &&
+    env.testPassword &&
+    !isPlaceholder(env.testEmail) &&
+    !isPlaceholder(env.testPassword)
+  );
 }

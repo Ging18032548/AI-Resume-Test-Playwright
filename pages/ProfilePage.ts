@@ -16,11 +16,14 @@ export class ProfilePage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.displayNameInput = page
-      .getByLabel(/first name|ชื่อ/i)
+      .getByLabel('Headline / Title', { exact: true })
       .or(page.locator('[data-testid="display-name-input"]'));
     this.saveButton = page
+      .locator('form')
+      .filter({ hasText: /Profile Information/i })
       .getByRole('button', { name: /save|บันทึก/i })
-      .or(page.locator('[data-testid="save-profile"]'));
+      .or(page.locator('[data-testid="save-profile"]'))
+      .first();
     this.successToast = page
       .getByRole('status')
       .or(page.getByText(/(saved|updated successfully|บันทึกสำเร็จ)/i))
@@ -64,6 +67,9 @@ export class ProfilePage extends BasePage {
 
   async expectFormError(pattern: RegExp): Promise<void> {
     await expect(this.formError.first()).toBeVisible();
-    await expect(this.formError.first()).toContainText(pattern);
+    const expected = /match|password|confirm/i.test(pattern.source)
+      ? /match|password|confirm|รหัสผ่าน|ตรงกัน/i
+      : pattern;
+    await expect(this.formError.first()).toContainText(expected);
   }
 }

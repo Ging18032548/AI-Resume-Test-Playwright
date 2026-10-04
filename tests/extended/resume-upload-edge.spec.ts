@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/mockApi';
 import { LoginPage } from '../../pages/LoginPage';
 import { UploadResumePage } from '../../pages/UploadResumePage';
 import { env, hasTestAccount, MAX_UPLOAD_MB } from '../../utils/testData';
@@ -41,6 +41,7 @@ test.describe('Resume upload', () => {
     const upload = new UploadResumePage(page);
     await upload.goto();
     await upload.uploadResume(createFakePdfExtension());
+    await upload.uploadButton.click();
     await upload.expectUploadError(/PDF|ไฟล์|ไม่ถูกต้อง|invalid/i);
   });
 
@@ -48,6 +49,7 @@ test.describe('Resume upload', () => {
     const upload = new UploadResumePage(page);
     await upload.goto();
     await upload.uploadResume(createOversizedCvPdf(MAX_UPLOAD_MB + 1));
+    await upload.uploadButton.click();
     await upload.expectUploadError(/ใหญ่|size|maximum|limit|MB/i);
   });
 });

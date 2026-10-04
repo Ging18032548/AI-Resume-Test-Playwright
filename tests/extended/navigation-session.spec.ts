@@ -1,7 +1,7 @@
 import {
   test,
   expect,
-} from '@playwright/test';
+} from '../../fixtures/mockApi';
 
 import {
   hasTestAccount,

@@ -12,6 +12,12 @@ Copy-Item .env.example .env
 
 Set `BASE_URL` in `.env` to the running website URL. Set `TEST_EMAIL` and `TEST_PASSWORD` to an existing QA account for tests that need authentication. `API_BASE_URL` is reserved for API checks.
 
+Browser tests use Playwright API mocking by default (`MOCK_API=true`). Requests to
+authentication, profile, resume, analysis, job, and password-reset write endpoints
+are fulfilled inside the browser and are not sent to the backend. Set
+`MOCK_API=false` only when intentionally running against an isolated QA backend
+and database; never use the developer or production database.
+
 ## Run tests
 
 ```powershell
@@ -25,6 +31,8 @@ npm run test:upload                            # resume upload validation
 npm run test:analysis                          # resume analysis
 npm run test:profile                           # profile and settings
 npm run test:navigation                        # navigation and session
+npm run test:protected-pages                   # functional checks for every protected page
+npm run test:password-reset                    # forgot-password validation and request flow
 npm run test:critical                          # complete real-user journey on Desktop Chrome
 npm run test:full-system                       # register, upload, analyze, navigate, and logout
 npm run test:features                          # authentication, routes, navigation, and logout on all devices
@@ -33,7 +41,7 @@ npx playwright test tests/full-system.spec.ts --project="Desktop Chrome" # click
 npm run report                                # open latest HTML report
 ```
 
-The suite covers app availability, authentication validation, registration/login, protected navigation, profile settings, resume upload validation, analysis results, result persistence after reload, logout protection, and mobile UI. Tests requiring a pre-existing account need valid `TEST_EMAIL` and `TEST_PASSWORD` values. The new-member upload and full-system flows require `REGISTRATION_NAME`, `REGISTRATION_EMAIL`, and `REGISTRATION_PASSWORD`; the test derives a unique email using plus-addressing from `REGISTRATION_EMAIL`, so the configured domain must accept plus-addresses. Authenticated tests are skipped with a clear reason when credentials are not configured.
+The suite covers app availability, authentication validation, registration/login, protected page rendering, protected navigation, profile settings and persistence, password reset validation, resume upload validation, analysis results, result persistence after reload, logout protection, and mobile UI. Tests requiring a pre-existing account need valid `TEST_EMAIL` and `TEST_PASSWORD` values. The new-member upload and full-system flows require `REGISTRATION_NAME`, `REGISTRATION_EMAIL`, and `REGISTRATION_PASSWORD`; the test derives a unique email using plus-addressing from `REGISTRATION_EMAIL`, so the configured domain must accept plus-addresses. Authenticated tests are skipped with a clear reason when credentials are not configured.
 
 ## Project layout
 

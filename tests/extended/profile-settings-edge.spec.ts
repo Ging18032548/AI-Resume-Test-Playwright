@@ -1,7 +1,7 @@
 import {
   test,
   expect,
-} from '@playwright/test';
+} from '../../fixtures/mockApi';
 
 import {
   env,
@@ -60,6 +60,21 @@ test.describe(
         );
 
         await profile.expectSaved();
+      }
+    );
+
+    test(
+      'PROFILE-FUNCTIONAL-001: Updated display name persists after reload',
+      async ({ page }) => {
+        const profile = new ProfilePage(page);
+        const displayName = `QA Persisted ${Date.now()}`;
+
+        await profile.goto();
+        await profile.updateDisplayName(displayName);
+        await profile.expectSaved();
+        await page.reload();
+
+        await expect(profile.displayNameInput).toHaveValue(displayName);
       }
     );
 

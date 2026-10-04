@@ -63,7 +63,7 @@ export class LoginPage extends BasePage {
 
     this.resetSubmitButton = page
       .getByRole('button', {
-        name: /reset|send|submit/i,
+        name: /reset|send|submit|ส่งรหัส\s*OTP/i,
       })
       .first();
 
@@ -71,7 +71,8 @@ export class LoginPage extends BasePage {
       .locator(
         '[data-testid="reset-confirmation"], ' +
           '[role="status"], ' +
-          '.success-message',
+          '.success-message, ' +
+          'main p:has-text("เราได้ส่งรหัส OTP ไปแล้ว")',
       )
       .first();
 

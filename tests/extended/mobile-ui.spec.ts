@@ -1,15 +1,15 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/mockApi';
 import { LoginPage } from '../../pages/LoginPage';
 import {
-  testEmail,
-  testPassword,
+  hasTestAccount,
+  env,
 } from '../../utils/testData';
 
 test.describe('Mobile UI Tests', () => {
 
   test.beforeEach(async ({ page }) => {
 
-    if (!testEmail || !testPassword) {
+    if (!hasTestAccount()) {
       test.skip(
         true,
         'TEST_EMAIL and TEST_PASSWORD are not configured in .env'
@@ -19,8 +19,8 @@ test.describe('Mobile UI Tests', () => {
     const login = new LoginPage(page);
 
     await login.login(
-      testEmail,
-      testPassword
+      env.testEmail,
+      env.testPassword
     );
 
     await login.expectLoggedIn();
@@ -70,6 +70,7 @@ test.describe('Mobile UI Tests', () => {
     page,
   }) => {
 
+    await page.evaluate(() => localStorage.clear());
     const login = new LoginPage(page);
     await login.gotoLogin();
 

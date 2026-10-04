@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page } from '../../fixtures/mockApi';
 import { LoginPage } from '../../pages/LoginPage';
 import { UploadResumePage } from '../../pages/UploadResumePage';
 import { AnalysisResultPage } from '../../pages/AnalysisResultPage';
